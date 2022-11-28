@@ -3,4 +3,11 @@
     <string name="select">select</string>
     <string name="uritext">uri</string>
     <string name="hello_world_text">Hello World!</string>
+    <string name="nav_open">Open</string>
+    <string name="nav_close">Close</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+
+    <!-- Preference Titles -->
+    <string name="darkThemeSettingsTitle">Dark Theme</string>
+    <string name="theme">Theme</string>
 </resources>

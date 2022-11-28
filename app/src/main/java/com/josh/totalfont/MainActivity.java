@@ -5,20 +5,32 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+
+import android.view.Menu;
+import android.view.MenuItem;
 
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 //import android.graphics.Typeface;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.OpenableColumns;
+import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
+import com.google.android.material.navigation.NavigationView;
+
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
 
     ActivityResultLauncher<Intent> resultLauncher;
 
@@ -30,12 +42,21 @@ public class MainActivity extends AppCompatActivity {
     private TextView main;
     private TextView selectButton;
 
-
+    public DrawerLayout drawerLayout;
+    public ActionBarDrawerToggle actionBarDrawerToggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        drawerLayout = findViewById(R.id.my_drawer_layout);
+        actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout,R.string.nav_open,R.string.nav_close);
+        drawerLayout.addDrawerListener(actionBarDrawerToggle);
+        actionBarDrawerToggle.syncState();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        setNavigationViewListener();
+
 
         main = findViewById(R.id.mainTextView);
         selectButton = findViewById(R.id.selectButton);
@@ -51,8 +72,9 @@ public class MainActivity extends AppCompatActivity {
                         if(data != null){
                              Uri sUri = data.getData();
                             fontPath = sUri.getPath();
+
                             uriView.setText(fontPath);
-                            System.out.println(fontPath);
+                            
                             //customFont = Typeface.createFromFile("/storage/emulated/0"+fontPath);
                             //main.setTypeface(customFont);
                         }
@@ -81,6 +103,33 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item){
+        //this function is called by total font to open the navigation menu when the hamburger menu icon is tapped
+        if(actionBarDrawerToggle.onOptionsItemSelected(item)){
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item){
+        if(item.getItemId() == R.id.filepathchooserlink){
+            Intent choosefile = new Intent(this,FilePathChooser.class);
+            startActivity(choosefile);
+        } else if(item.getItemId() == R.id.settings){
+            Intent settings = new Intent(this,SettingsActivity.class);
+            startActivity(settings);
+        }
+        drawerLayout.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    private void setNavigationViewListener(){
+        NavigationView nv = findViewById(R.id.nv);
+        nv.setNavigationItemSelectedListener(this);
+    }
+
+
 
     private void selectTTF()
 
@@ -97,6 +146,7 @@ public class MainActivity extends AppCompatActivity {
         //but as it doesn't seem to work,
         //i set it to */* which will allow
         //any file to be opened
+
         // Launch intent
 
         resultLauncher.launch(intent);
